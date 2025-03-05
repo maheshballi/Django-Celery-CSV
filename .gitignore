@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+.env
+venv/
+*.sqlite3
+
+media/
+uploads/
+
+celerybeat-schedule
+
+*.log
+node_modules/

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Upload</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 20px;
+            text-align: center;
+        }
+
+        h2, h3 {
+            color: #343a40;
+        }
+
+        .upload-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 65, 78, 0.714);
+            display: inline-block;
+            text-align: left;
+            width: 40%;
+        }
+
+        button {
+            background-color: rgba(3, 38, 40, 0.489);
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #333;
+        }
+
+        .status-container {
+            margin-top: 20px;
+            padding: 10px;
+            display: inline-block;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        table {
+            width: 60%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(8, 21, 43, 0.1);
+            border-radius: 5px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: rgba(62, 6, 74, 0.991);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .summary-row {
+            background-color: #ffeeba;
+            font-weight: bold;
+        }
+
+        #search-input {
+            width: 50%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 2px solid #343a40;
+            box-shadow: 0px 0px 10px rgba(52, 58, 64, 0.3);
+            text-align: left;
+            display: block;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Upload CSV File</h2>
+
+    <div class="upload-container">
+        <form id="upload-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+
+    <h3>Upload Status:</h3>
+    <p id="task-status" class="status-container">Waiting for upload...</p>
+
+    <h3>Processed Data:</h3>
+
+    <input type="text" id="search-input" placeholder="🔍 Search product..." onkeyup="filterTable()">
+
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>Metric</th>
+                <th>Sum</th>
+                <th>Average</th>
+                <th>Count</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        $(document).ready(function() {
+            $('#upload-form').on('submit', function(event) {
+                event.preventDefault();
+                var formData = new FormData(this);
+                
+                $('#task-status').removeClass().addClass('status-container status-error').text("Uploading...");
+    
+                $.ajax({
+                    url: '',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.task_id) {
+                            $('#task-status').removeClass().addClass('status-container status-success').text("Processing...");
+                            pollTaskStatus(response.task_id);
+                        }
+                    },
+                    error: function() {
+                        $('#task-status').removeClass().addClass('status-container status-error').text("Upload Failed!");
+                    }
+                });
+            });
+    
+            function pollTaskStatus(taskId) {
+                var interval = setInterval(function() {
+                    $.get('/task-status/' + taskId + '/', function(response) {
+                        $('#task-status').removeClass().addClass('status-container status-success').text("Status: " + response.status);
+    
+                        if (response.status === "SUCCESS") {
+                            clearInterval(interval);
+                            displayData(response.result);
+                        }
+                    });
+                }, 2000);
+            }
+    
+            function displayData(data) {
+                var tableBody = $('#data-table tbody');
+                tableBody.empty();  // 🔥 **Clears old data before appending new results**
+    
+                Object.keys(data.calculations).forEach(function(metric) {
+                    var newRow = '<tr>' +
+                        '<td>' + metric + '</td>' +
+                        '<td>' + data.calculations[metric].sum + '</td>' +
+                        '<td>' + data.calculations[metric].average + '</td>' +
+                        '<td>' + data.calculations[metric].count + '</td>' +
+                        '</tr>';
+                    tableBody.append(newRow);
+                });
+    
+                // Summary Rows
+                tableBody.append('<tr class="summary-row"><td>Total Revenue</td><td colspan="3">' + data.total_revenue + '</td></tr>');
+                tableBody.append('<tr class="summary-row"><td>Average Discount</td><td colspan="3">' + data.avg_discount + '</td></tr>');
+                tableBody.append('<tr class="summary-row"><td>Best-Selling Product</td><td colspan="3">' + data.best_selling_product + '</td></tr>');
+                tableBody.append('<tr class="summary-row"><td>Most Profitable Product</td><td colspan="3">' + data.most_profitable_product + '</td></tr>');
+                tableBody.append('<tr class="summary-row"><td>Max Discount Product</td><td colspan="3">' + data.max_discount_product + '</td></tr>');
+            }
+        });
+    </script>    
+
+</body>
+</html>
