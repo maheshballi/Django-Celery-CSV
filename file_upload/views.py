@@ -7,7 +7,7 @@ from celery.result import AsyncResult
 from celery import current_app
 from .models import UploadedFile
 from .forms import UploadFileForm
-from .tasks import process_csv  # Import the Celery task
+from .tasks import process_csv  
 
 def upload_file(request):
     """
