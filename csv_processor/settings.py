@@ -1,5 +1,8 @@
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -11,10 +14,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6(s%o)5&9$0dsjkm&23qr-fq3l0=)(uq--7wb8-c3!#2@c+b%a'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG") == "True"
 
 ALLOWED_HOSTS = []
 
@@ -116,7 +119,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Celery Configuration
-CELERY_BROKER_URL = 'redis://localhost:6380/0'  # Redis as the message broker
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")  # Redis as the message broker
 CELERY_RESULT_BACKEND = 'redis://localhost:6380/0'  # Redis as the result backend
 CELERY_ACCEPT_CONTENT = ['json']  # Accept only JSON content
 CELERY_TASK_SERIALIZER = 'json'  # Serialize tasks as JSON
