@@ -1,16 +1,27 @@
+# Virtual Environment
+venv/
+.env
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-.env
-venv/
-*.sqlite3
-
+#Media Files
 media/
 uploads/
 
-celerybeat-schedule
+# Redis
+dump.rdb
 
+# VS Code and System Files
+.vscode/
+.DS_Store
+Thumbs.db
+
+
+# Django and Celery
+db.sqlite3
+*.sqlite3
 *.log
+celerybeat-schedule
 node_modules/
