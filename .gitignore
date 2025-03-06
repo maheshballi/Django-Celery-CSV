@@ -1,15 +1,3 @@
-# Virtual Environment
-venv/
-.env
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-#Media Files
-media/
-uploads/
-
 # Redis
 dump.rdb
 
@@ -18,10 +6,43 @@ dump.rdb
 .DS_Store
 Thumbs.db
 
+# Ignore virtual environment directory
+venv/
 
-# Django and Celery
-db.sqlite3
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore database files
+*.db
 *.sqlite3
-*.log
+
+# Ignore environment variables file
+.env
+
+# Ignore system-specific files
+.DS_Store
 celerybeat-schedule
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore log files
+*.log
+
+# Ignore coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# Ignore static files
+staticfiles/
+
+# Ignore media files
+media/
+uploads/
+
+# Ignore node_modules if using Node.js
 node_modules/
