@@ -1,14 +1,11 @@
 from pathlib import Path
 import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')  # Make sure this path is correct
-
+MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')  
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -117,6 +114,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
 # Celery Configuration
 CELERY_BROKER_URL = 'redis://localhost:6380/0'  # Redis as the message broker
 CELERY_RESULT_BACKEND = 'redis://localhost:6380/0'  # Redis as the result backend
@@ -124,7 +122,7 @@ CELERY_ACCEPT_CONTENT = ['json']  # Accept only JSON content
 CELERY_TASK_SERIALIZER = 'json'  # Serialize tasks as JSON
 CELERY_RESULT_SERIALIZER = 'json'  # Serialize results as JSON
 CELERY_TASK_TRACK_STARTED = True  # Track when a task starts
-CELERY_TASK_TIME_LIMIT = 30  # Set a timeout for tasks (optional)
+CELERY_TASK_TIME_LIMIT = 30  # Set a timeout for tasks in seconds
 
 
 
